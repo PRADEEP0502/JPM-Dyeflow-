@@ -4,56 +4,24 @@
 
 @layer base {
   body {
-    @apply bg-[#f4f6f8] text-[#1e293b] font-sans antialiased;
-    font-feature-settings: "cv02", "cv03", "cv04", "cv11", "tnum";
-  }
-
-  /* Monospace numbers for precision textile measurements */
-  .font-numeric {
-    font-variant-numeric: tabular-nums;
-    font-feature-settings: "tnum";
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
+    @apply bg-[#fbfbfd] text-[#1d1d1f] antialiased;
+    letter-spacing: -0.011em;
   }
 }
 
-/* Custom scrollbars for industrial density */
+/* Subtle, clean scrollbars */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
 }
 ::-webkit-scrollbar-track {
-  background: #f1f5f9;
+  background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
-  border-radius: 3px;
+  background: #d2d2d7;
+  border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
-}
-
-/* Textile weave watermark pattern for industrial authenticity */
-.bg-grid-industrial {
-  background-size: 24px 24px;
-  background-image: 
-    linear-gradient(to right, rgba(15, 36, 56, 0.03) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(15, 36, 56, 0.03) 1px, transparent 1px);
-}
-
-.lab-rc-border {
-  border: 1px solid #d1d9e2;
-  box-shadow: 0 1px 3px rgba(15, 36, 56, 0.05);
-}
-
-/* Print view optimization for physical Dye House job cards */
-@media print {
-  .no-print {
-    display: none !important;
-  }
-  .print-only {
-    display: block !important;
-  }
-  body {
-    background: white !important;
-    color: black !important;
-  }
+  background: #86868b;
 }
