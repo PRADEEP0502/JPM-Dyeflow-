@@ -2,46 +2,33 @@ import React from 'react';
 import { DyeFlowProvider, useDyeFlow } from './context/DyeFlowContext';
 import { AppSidebar } from './components/layout/AppSidebar';
 import { AppHeader } from './components/layout/AppHeader';
-import { OverviewView } from './components/views/OverviewView';
-import { LabApprovalsView } from './components/views/LabApprovalsView';
-import { CustomerApprovalsView } from './components/views/CustomerApprovalsView';
-import { BulkOrdersView } from './components/views/BulkOrdersView';
-import { ProductionView } from './components/views/ProductionView';
-import { DeliveriesView } from './components/views/DeliveriesView';
-import { ReportsView } from './components/views/ReportsView';
-import { SettingsView } from './components/views/SettingsView';
-import { TraceModal } from './components/common/TraceModal';
-import { NotificationToastContainer } from './components/common/NotificationToast';
+import { DashboardView } from './components/views/DashboardView';
+import { LdnTrackingView } from './components/views/LdnTrackingView';
+import { PendingBulkView } from './components/views/PendingBulkView';
+import { ErpBulkOrdersView } from './components/views/ErpBulkOrdersView';
+import { DetailTimelineModal } from './components/common/DetailTimelineModal';
 
 const AppContent: React.FC = () => {
-  const { activeTab } = useDyeFlow();
+  const { activePage } = useDyeFlow();
 
   const renderCurrentView = () => {
-    switch (activeTab) {
-      case 'overview':
-        return <OverviewView />;
-      case 'lab-approvals':
-        return <LabApprovalsView />;
-      case 'customer-approvals':
-        return <CustomerApprovalsView />;
-      case 'bulk-orders':
-        return <BulkOrdersView />;
-      case 'production':
-        return <ProductionView />;
-      case 'deliveries':
-        return <DeliveriesView />;
-      case 'reports':
-        return <ReportsView />;
-      case 'settings':
-        return <SettingsView />;
+    switch (activePage) {
+      case 'dashboard':
+        return <DashboardView />;
+      case 'ldn-tracking':
+        return <LdnTrackingView />;
+      case 'pending-bulk':
+        return <PendingBulkView />;
+      case 'erp-orders':
+        return <ErpBulkOrdersView />;
       default:
-        return <OverviewView />;
+        return <DashboardView />;
     }
   };
 
   return (
-    <div className="flex h-screen w-screen overflow-hidden bg-[#f4f6f8]">
-      {/* Industrial Left Navigation Sidebar */}
+    <div className="flex h-screen w-screen overflow-hidden bg-[#f8fafc]">
+      {/* Sidebar Navigation */}
       <AppSidebar />
 
       {/* Main Content Area */}
@@ -50,14 +37,13 @@ const AppContent: React.FC = () => {
         <AppHeader />
 
         {/* Scrollable View Content */}
-        <main className="flex-1 overflow-y-auto bg-grid-industrial">
+        <main className="flex-1 overflow-y-auto">
           {renderCurrentView()}
         </main>
       </div>
 
-      {/* Global Modals & Notifications */}
-      <TraceModal />
-      <NotificationToastContainer />
+      {/* 5-Step Detail Timeline Modal */}
+      <DetailTimelineModal />
     </div>
   );
 };

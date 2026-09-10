@@ -2,97 +2,77 @@ import React from 'react';
 import { useDyeFlow } from '../../context/DyeFlowContext';
 import { 
   LayoutDashboard, 
-  FlaskConical, 
-  CheckCircle2, 
-  FileSpreadsheet, 
-  Factory, 
   Truck, 
-  BarChart3, 
-  Settings
+  Clock, 
+  FileSpreadsheet, 
+  Layers
 } from 'lucide-react';
-import { ActiveTab } from '../../types';
+import { ActivePage } from '../../types';
 
 export const AppSidebar: React.FC = () => {
-  const { 
-    activeTab, 
-    setActiveTab, 
-    labApprovals, 
-    bulkOrders, 
-    productionBatches, 
-    deliveryRecords 
-  } = useDyeFlow();
+  const { activePage, setActivePage, metrics } = useDyeFlow();
 
-  const pendingApprovalsCount = labApprovals.filter(
-    l => l.approvalStatus === 'Awaiting Customer'
-  ).length;
-
-  const navItems: { id: ActiveTab; label: string; icon: React.ComponentType<{ className?: string }>; badge?: number }[] = [
+  const navItems: { id: ActivePage; label: string; icon: React.ComponentType<{ className?: string }>; badge?: number; badgeColor?: string }[] = [
     {
-      id: 'overview',
-      label: 'Overview',
-      icon: LayoutDashboard,
+      id: 'dashboard',
+      label: 'Dashboard',
+      icon: LayoutDashboard
     },
     {
-      id: 'lab-approvals',
-      label: 'Lab Approvals',
-      icon: FlaskConical,
-      badge: labApprovals.length
-    },
-    {
-      id: 'customer-approvals',
-      label: 'Customer Approvals',
-      icon: CheckCircle2,
-      badge: pendingApprovalsCount > 0 ? pendingApprovalsCount : undefined
-    },
-    {
-      id: 'bulk-orders',
-      label: 'Bulk Orders',
-      icon: FileSpreadsheet,
-      badge: bulkOrders.length
-    },
-    {
-      id: 'production',
-      label: 'Production',
-      icon: Factory,
-      badge: productionBatches.filter(p => p.stage !== 'Completed').length
-    },
-    {
-      id: 'deliveries',
-      label: 'Deliveries',
+      id: 'ldn-tracking',
+      label: 'LDN Tracking',
       icon: Truck,
-      badge: deliveryRecords.filter(d => d.deliveryStatus !== 'Delivered').length
+      badge: metrics.totalLdnDelivered,
+      badgeColor: 'bg-slate-800 text-slate-300'
     },
     {
-      id: 'reports',
-      label: 'Reports',
-      icon: BarChart3
+      id: 'pending-bulk',
+      label: 'Bulk Conversion Pending',
+      icon: Clock,
+      badge: metrics.bulkOrdersPending,
+      badgeColor: 'bg-amber-100 text-amber-900 border border-amber-300 font-bold'
+    },
+    {
+      id: 'erp-orders',
+      label: 'ERP Bulk Orders',
+      icon: FileSpreadsheet,
+      badge: metrics.bulkOrdersFound,
+      badgeColor: 'bg-indigo-100 text-indigo-900'
     }
   ];
 
   return (
-    <aside className="w-60 bg-[#0f172a] text-slate-300 flex flex-col justify-between shrink-0 select-none border-r border-slate-800">
+    <aside className="w-64 bg-[#0f172a] text-slate-300 flex flex-col justify-between shrink-0 select-none border-r border-slate-800">
       <div>
-        {/* Top Logo */}
-        <div className="p-5 border-b border-slate-800/80">
+        {/* Brand Header */}
+        <div className="p-5 border-b border-slate-800">
           <div className="flex items-center gap-2.5">
             <span className="w-2.5 h-2.5 rounded-full bg-amber-400" />
-            <span className="font-bold text-sm text-white tracking-wide uppercase">
-              JPM Operations
-            </span>
+            <div>
+              <span className="font-bold text-sm text-white tracking-wide uppercase block">
+                JPM DyeFlow
+              </span>
+              <span className="text-[10px] text-slate-400 font-mono block">
+                Junior Processing Mills
+              </span>
+            </div>
           </div>
         </div>
 
-        {/* Navigation List */}
+        {/* Navigation */}
         <nav className="p-3 space-y-1">
+          <div className="px-3 py-1.5 text-[10px] font-mono tracking-widest text-slate-400 uppercase font-semibold">
+            NAVIGATION
+          </div>
           {navItems.map((item) => {
             const Icon = item.icon;
-            const isActive = activeTab === item.id;
+            const isActive = activePage === item.id;
 
             return (
               <button
                 key={item.id}
                 type="button"
-                onClick={() => setActiveTab(item.id)}
+                onClick={() => setActivePage(item.id)}
                 className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-md text-xs font-medium transition-all ${
                   isActive
                     ? 'bg-slate-800 text-white font-semibold'
@@ -101,13 +81,11 @@ export const AppSidebar: React.FC = () => {
               >
                 <div className="flex items-center gap-3">
                   <Icon className={`w-4 h-4 ${isActive ? 'text-amber-400' : 'text-slate-400'}`} />
-                  <span>{item.label}</span>
+                  <span className="truncate">{item.label}</span>
                 </div>
 
                 {item.badge !== undefined && (
-                  <span className={`text-[11px] font-mono px-2 py-0.5 rounded-full ${
-                    isActive ? 'bg-amber-400 text-slate-900 font-bold' : 'bg-slate-800 text-slate-300'
-                  }`}>
+                  <span className={`text-[10px] font-mono px-2 py-0.5 rounded-full ${item.badgeColor || 'bg-slate-800 text-slate-300'}`}>
                     {item.badge}
                   </span>
                 )}
@@ -117,20 +95,15 @@ export const AppSidebar: React.FC = () => {
         </nav>
       </div>
 
-      {/* Bottom Settings */}
-      <div className="p-3 border-t border-slate-800/80">
-        <button
-          type="button"
-          onClick={() => setActiveTab('settings')}
-          className={`w-full flex items-center gap-3 px-3.5 py-2 rounded-md text-xs font-medium transition-colors ${
-            activeTab === 'settings'
-              ? 'bg-slate-800 text-white'
-              : 'text-slate-400 hover:bg-slate-800/60 hover:text-slate-200'
-          }`}
-        >
-          <Settings className="w-4 h-4 text-slate-400" />
-          <span>Settings</span>
-        </button>
+      {/* Footer Info */}
+      <div className="p-4 border-t border-slate-800 text-[11px] text-slate-400 space-y-1">
+        <div className="flex items-center gap-1.5 text-slate-300 font-semibold">
+          <Layers className="w-3.5 h-3.5 text-amber-400" />
+          <span>Core Tracking Principle:</span>
+        </div>
+        <div className="text-[10px] text-slate-400 leading-relaxed font-mono">
+          LRN (Sample In) → LDN (Sample Out) → ERP Bulk Match
+        </div>
       </div>
     </aside>
   );
