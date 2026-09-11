@@ -2,7 +2,7 @@ export type MatchResult = 'Bulk Order Found' | 'Waiting';
 
 export interface LdnItem {
   ldnNo: string; // e.g. "LDN-10293"
-  lrnNo: string; // e.g. "LRN-23"
+  lrnNo: string; // e.g. "LRN-23" — links back to the LrnRecord with the same lrnNo
   labAppNo: string; // e.g. "16321 (8157-26/A)"
   customer: string; // e.g. "Coral Knit Wear"
   colorName: string; // e.g. "13-2807 TX"
@@ -15,4 +15,23 @@ export interface LdnItem {
   result: MatchResult;
 }
 
-export type NavTab = 'dashboard' | 'ldn-tracking' | 'waiting-bulk';
+/** Selsoft LRN (Lab Inward Entry) — the first stage of the workflow, before Lab Processing. */
+export interface LrnRecord {
+  lrnNo: string; // e.g. "LRN-23" — the same LRN No carried on the matching LdnItem
+  date: string; // Lab inward receive date
+  party: string; // Party / Customer placing the lab request
+  contact: string;
+  buyer: string;
+  fabric: string;
+  markNo: string;
+  remarks: string;
+  expectedDeliveryDate: string;
+  partyGroup: string;
+  contactNo: string;
+  orderNo: string;
+  colour: string;
+  matchSource: string;
+  mlr: string;
+}
+
+export type NavTab = 'dashboard' | 'lrn-tracking' | 'ldn-tracking' | 'waiting-bulk';

@@ -1,101 +1,69 @@
 # JPM DyeFlow
-### Lab Approval → Bulk Order → Dyeing → Delivery Management System
-**Junior Processing Mills (JPM) Enterprise Operations Suite**
+
+**Lab Delivery → ERP Bulk Order Reconciliation Dashboard**
+Junior Processing Mills (JPM) — Textile Wet-Processing Operations
 
 ---
 
-## 🌟 Overview
+## Overview
 
-**JPM DyeFlow** is a purpose-built enterprise operations platform designed for **Junior Processing Mills (JPM)**. It provides end-to-end traceability across the textile wet-processing lifecycle, utilizing the **Lab Approval Number** (e.g. `8157-26/A`) as the core reference connecting shade formulation to customer delivery.
+JPM DyeFlow tracks how lab-approved colour samples convert into confirmed ERP bulk production orders. Every delivered lab sample (LDN) is reconciled against Selsoft ERP to show whether a corresponding bulk order has been placed, and if not, how long it has been waiting.
 
----
-
-## 🔄 Core Business Process
+The workflow it models:
 
 ```
-Customer gives fabric/sample
-        ↓
-Lab Colour Matching & Formulation (Lab RC)
-        ↓
-Lab RC / Colour Approval (ΔE < 0.80)
-        ↓
-Customer Approval Desk
-        ↓
-Bulk Order Received & Lot Allocation
-        ↓
-Dyeing / Production (Softflow & HTHP Vessels)
-        ↓
-Ready for Delivery (Stenter / Hydro / Pack)
-        ↓
-Dispatched (E-Way Bill & Gate Pass)
-        ↓
-Delivered (Signed Proof of Delivery / POD)
+LRN (Lab Receive)  →  Lab Processing (dye trial & shade match)  →  LDN (Lab Delivery)  →  ERP Bulk Matching
 ```
 
----
+## Features
 
-## 🔑 Key Features
+- **Summary & Overview** — key metrics (samples delivered, bulk orders converted, confirmed quantity, pending orders), a 4-step workflow stepper, buyer-wise conversion performance with progress bars, and an overall conversion-rate breakdown.
+- **All LDN Deliveries** — full register of delivered lab samples cross-matched against ERP bulk orders, filterable by status (All / Matched Bulk / Waiting) and by customer.
+- **Pending Bulk Orders** — samples delivered to a customer with no bulk order yet logged in ERP, sorted by days elapsed.
+- **Search** — instant search across LDN, LRN, lab approval number, customer, colour name, and bulk order number.
+- **Record detail modal** — per-sample audit trail (LRN inward → LDN outward → ERP bulk match) with full spec attributes.
+- Responsive layout — table view on desktop/tablet, card view on mobile, with a collapsible mobile nav drawer.
 
-1. **Operations Overview & 5-Step Process Pipeline**:
-   - `LAB (24 Samples) → APPROVAL (08 Pending) → BULK (35 Orders / 12,500 KG) → PRODUCTION (20 Active) → DELIVERY (08 Ready)`
-   - Live metrics and Bulk Order Movement tracking.
+## Tech Stack
 
-2. **Lab Approvals & Recipe Cards (Lab RC)**:
-   - Split-layout interface for formulation review.
-   - Spectrophotometer $\Delta E$ tolerance verification and physical swatch comparison.
-   - Chemical recipe breakdown and direct **"BULK ORDER LINK"**.
+- React 18 + TypeScript + Vite
+- Tailwind CSS
+- Lucide React (icons)
 
-3. **Customer Approval Desk**:
-   - Status tracking (`Awaiting Customer`, `Approved`, `Rejected`, `Resubmission Required`).
-   - Customer feedback and metamerism rejection logging.
+## Project Structure
 
-4. **Bulk Orders Register**:
-   - Order management with 4-tier relationship drawer:
-     $$\text{Lab Approval} \longrightarrow \text{Bulk Order} \longrightarrow \text{Production} \longrightarrow \text{Delivery}$$
+```
+src/
+  App.tsx          # Single-page app: header, dashboard, data grid, detail modal
+  data/mockData.ts # Sample LDN records and summary numbers
+  types/index.ts    # LdnItem, NavTab and related types
+  main.tsx, index.css
+```
 
-5. **Dye House Production Board**:
-   - 4-stage tracking: `Queued` $\rightarrow$ `Dyeing` $\rightarrow$ `QC` $\rightarrow$ `Completed`.
-   - Machine telemetry (vessel allocation, temperature, pH).
+Currently the app runs on mock data in [src/data/mockData.ts](src/data/mockData.ts). Replace this with a live ERP/API data source to move beyond the demo dataset.
 
-6. **Logistics & Proof of Delivery (POD)**:
-   - Vehicle allocation, E-Way Bill generation, and digital POD sign-off archiving.
-
-7. **Full Audit Trace & Job Card Printing**:
-   - Click any Lab Approval Number to view its full lifecycle audit trail with printable traveler chits.
-
-8. **Selsoft ERP Integration Ready**:
-   - Standardized REST/JSON data contract for ERP synchronization.
-
----
-
-## 🚀 Quick Start
+## Getting Started
 
 ### Prerequisites
-- Node.js (v18+)
-- npm / pnpm / yarn
+- Node.js 18+
+- npm (or pnpm/yarn)
 
-### Installation & Running Locally
+### Install & Run
 
 ```bash
-# Clone the repository
 git clone https://github.com/PRADEEP0502/JPM-Dyeflow-.git
 cd JPM-Dyeflow-
-
-# Install dependencies
 npm install
-
-# Start development server
 npm run dev
+```
 
-# Build for production
-npm run build
+### Other Scripts
+
+```bash
+npm run build     # Type-check and build for production
+npm run preview   # Preview the production build locally
 ```
 
 ---
 
-## 🛠 Tech Stack
-
-- **Framework**: React 18 + TypeScript + Vite
-- **Styling**: Tailwind CSS
-- **Icons**: Lucide React
-- **Architecture**: Modular Component-Driven State with Context API
+*This README reflects the current LDN-to-bulk reconciliation dashboard implementation. Broader ERP modules described in earlier versions of this document (lab RC, dye house production board, logistics/POD) are not part of the current codebase.*

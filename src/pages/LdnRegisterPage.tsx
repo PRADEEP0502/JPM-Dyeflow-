@@ -1,0 +1,53 @@
+import { LdnItem, MatchResult } from '../types';
+import { LdnFilterBar } from '../components/ldn/LdnFilterBar';
+import { LdnTable } from '../components/ldn/LdnTable';
+import { LdnCardList } from '../components/ldn/LdnCardList';
+
+interface LdnRegisterPageProps {
+  totalCount: number;
+  filteredData: LdnItem[];
+  statusFilter: 'all' | MatchResult;
+  onStatusFilterChange: (value: 'all' | MatchResult) => void;
+  customerFilter: string;
+  onClearCustomer: () => void;
+  onSelect: (item: LdnItem) => void;
+}
+
+export function LdnRegisterPage({
+  totalCount,
+  filteredData,
+  statusFilter,
+  onStatusFilterChange,
+  customerFilter,
+  onClearCustomer,
+  onSelect,
+}: LdnRegisterPageProps) {
+  return (
+    <div className="space-y-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h3 className="text-base font-semibold text-neutral-900 flex items-center gap-2">
+            LDN Register
+            <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-neutral-100 text-neutral-500 font-mono">
+              {filteredData.length}
+            </span>
+          </h3>
+          <p className="text-xs text-neutral-500 mt-0.5">Delivered lab samples matched against ERP bulk orders</p>
+        </div>
+
+        <LdnFilterBar
+          totalCount={totalCount}
+          statusFilter={statusFilter}
+          onStatusFilterChange={onStatusFilterChange}
+          customerFilter={customerFilter}
+          onClearCustomer={onClearCustomer}
+        />
+      </div>
+
+      <div className="bg-white border border-neutral-200 rounded-xl overflow-hidden">
+        <LdnTable data={filteredData} mode="all" onSelect={onSelect} />
+        <LdnCardList data={filteredData} onSelect={onSelect} />
+      </div>
+    </div>
+  );
+}
