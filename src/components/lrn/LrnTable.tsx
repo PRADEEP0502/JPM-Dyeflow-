@@ -1,6 +1,7 @@
 import { LdnItem, LrnRecord } from '../../types';
 import { LDN_DATA } from '../../data/mockData';
 import { StatusBadge } from '../ldn/StatusBadge';
+import { daysBetween, parseDisplayDate } from '../../utils/format';
 
 interface LrnTableProps {
   data: LrnRecord[];
@@ -21,19 +22,23 @@ export function LrnTable({ data, onSelect }: LrnTableProps) {
             <th className="py-3.5 px-5 font-semibold">Colour</th>
             <th className="py-3.5 px-5 font-semibold">Match Source</th>
             <th className="py-3.5 px-5 font-semibold">Linked LDN</th>
+            <th className="py-3.5 px-5 font-semibold text-center">Age</th>
             <th className="py-3.5 px-5 font-semibold text-center">Result</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-neutral-100">
           {data.length === 0 ? (
             <tr>
-              <td colSpan={9} className="py-12 text-center text-sm text-neutral-400">
+              <td colSpan={10} className="py-12 text-center text-sm text-neutral-400">
                 No records found matching criteria.
               </td>
             </tr>
           ) : (
             data.map((lrn) => {
               const linkedLdn = LDN_DATA.find((ldn) => ldn.lrnNo === lrn.lrnNo);
+              const ageDays = linkedLdn
+                ? daysBetween(parseDisplayDate(lrn.date), parseDisplayDate(linkedLdn.deliveredDate))
+                : null;
 
               return (
                 <tr
@@ -64,6 +69,9 @@ export function LrnTable({ data, onSelect }: LrnTableProps) {
                     ) : (
                       <span className="text-neutral-300">—</span>
                     )}
+                  </td>
+                  <td className="py-4 px-5 text-center font-mono text-xs text-neutral-600">
+                    {ageDays !== null ? `${ageDays}d` : <span className="text-neutral-300">—</span>}
                   </td>
                   <td className="py-4 px-5 text-center">
                     {linkedLdn ? (

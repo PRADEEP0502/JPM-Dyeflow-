@@ -2,6 +2,7 @@ import { ChevronRight } from 'lucide-react';
 import { LdnItem, LrnRecord } from '../../types';
 import { LDN_DATA } from '../../data/mockData';
 import { StatusBadge } from '../ldn/StatusBadge';
+import { daysBetween, parseDisplayDate } from '../../utils/format';
 
 interface LrnCardListProps {
   data: LrnRecord[];
@@ -16,6 +17,9 @@ export function LrnCardList({ data, onSelect }: LrnCardListProps) {
       ) : (
         data.map((lrn) => {
           const linkedLdn = LDN_DATA.find((ldn) => ldn.lrnNo === lrn.lrnNo);
+          const ageDays = linkedLdn
+            ? daysBetween(parseDisplayDate(lrn.date), parseDisplayDate(linkedLdn.deliveredDate))
+            : null;
 
           return (
             <div
@@ -58,7 +62,7 @@ export function LrnCardList({ data, onSelect }: LrnCardListProps) {
 
               <div className="flex items-center justify-between pt-1 text-xs">
                 <span className="text-neutral-500 text-xs">
-                  {linkedLdn ? `Linked: ${linkedLdn.ldnNo}` : 'No linked LDN yet'}
+                  {linkedLdn ? `Linked: ${linkedLdn.ldnNo} · ${ageDays}d age` : 'No linked LDN yet'}
                 </span>
                 <span className="text-xs text-neutral-500 font-medium flex items-center gap-0.5">
                   Details <ChevronRight className="w-3.5 h-3.5" />
