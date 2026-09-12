@@ -1,6 +1,7 @@
 import { X } from 'lucide-react';
 import { LdnItem } from '../../types';
 import { LRN_DATA } from '../../data/mockData';
+import { daysBetween, parseDisplayDate } from '../../utils/format';
 
 interface LdnDetailModalProps {
   item: LdnItem;
@@ -156,6 +157,12 @@ export function LdnDetailModal({ item, onClose }: LdnDetailModalProps) {
             <div className="mt-1 text-neutral-700 font-mono text-xs">
               {item.bulkOrderNo} · {item.bulkQty}
             </div>
+            {item.bulkOrderDate && (
+              <div className="mt-1 text-emerald-700 text-xs">
+                Converted on {item.bulkOrderDate} —{' '}
+                {daysBetween(parseDisplayDate(item.deliveredDate), parseDisplayDate(item.bulkOrderDate))}d after delivery
+              </div>
+            )}
           </div>
         ) : (
           <div className="p-3.5 bg-amber-50 rounded-xl text-xs">

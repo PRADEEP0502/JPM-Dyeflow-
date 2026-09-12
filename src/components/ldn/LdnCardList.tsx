@@ -1,6 +1,14 @@
 import { ChevronRight } from 'lucide-react';
 import { LdnItem } from '../../types';
 import { StatusBadge } from './StatusBadge';
+import { daysBetween, parseDisplayDate } from '../../utils/format';
+
+function conversionAge(item: LdnItem): number {
+  if (item.bulkOrderDate) {
+    return daysBetween(parseDisplayDate(item.deliveredDate), parseDisplayDate(item.bulkOrderDate));
+  }
+  return item.daysWaiting;
+}
 
 interface LdnCardListProps {
   data: LdnItem[];
@@ -52,6 +60,7 @@ export function LdnCardList({ data, onSelect }: LdnCardListProps) {
                 <div className="font-mono text-xs">
                   <span className="text-emerald-700 font-medium mr-1.5">{item.bulkOrderNo}</span>
                   <span className="text-neutral-900 font-medium">{item.bulkQty}</span>
+                  <span className="text-neutral-400 ml-1.5">· {conversionAge(item)}d age</span>
                 </div>
               ) : (
                 <span className="text-neutral-400 text-xs italic">Awaiting sales order entry</span>

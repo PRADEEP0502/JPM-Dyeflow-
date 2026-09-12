@@ -69,6 +69,8 @@ const REMARKS = [
 ];
 /** Lab processing lead time (days) from LRN receipt to LDN delivery. */
 const LAB_PROCESSING_DAYS = [2, 3, 3, 4, 5];
+/** Days after LDN delivery that a converted sample's bulk order got logged in ERP. */
+const CONVERSION_LAG_DAYS = [1, 2, 3, 2, 4];
 
 /**
  * Assigns each record an LDN number that actually falls inside one of JPM's
@@ -107,6 +109,14 @@ function buildData(records: RawLdnRecord[]): { ldnData: LdnItem[]; lrnData: LrnR
     const colorName = colourBand?.name ?? 'Unassigned';
     const colorHex = colourBand?.hex;
 
+    let bulkOrderDate: string | undefined;
+    if (hasBulkOrder) {
+      const conversionLag = Math.min(CONVERSION_LAG_DAYS[index % CONVERSION_LAG_DAYS.length], record.offsetDays);
+      const converted = new Date(delivered);
+      converted.setDate(converted.getDate() + conversionLag);
+      bulkOrderDate = formatDisplayDate(converted);
+    }
+
     ldnData.push({
       ldnNo,
       lrnNo,
@@ -119,6 +129,7 @@ function buildData(records: RawLdnRecord[]): { ldnData: LdnItem[]; lrnData: LrnR
       daysWaiting: record.offsetDays,
       bulkOrderNo: hasBulkOrder ? `BO-2026-${String(bulkSeq).padStart(3, '0')}` : undefined,
       bulkQty: hasBulkOrder ? `${record.bulkQtyKg!.toLocaleString('en-IN')} KG` : undefined,
+      bulkOrderDate,
       result: hasBulkOrder ? 'Bulk Order Found' : 'Waiting',
     });
 

@@ -1,5 +1,6 @@
 import { LdnItem } from '../../types';
 import { StatusBadge } from './StatusBadge';
+import { daysBetween, parseDisplayDate } from '../../utils/format';
 
 interface LdnTableProps {
   data: LdnItem[];
@@ -7,8 +8,15 @@ interface LdnTableProps {
   onSelect: (item: LdnItem) => void;
 }
 
+function conversionAge(item: LdnItem): number {
+  if (item.bulkOrderDate) {
+    return daysBetween(parseDisplayDate(item.deliveredDate), parseDisplayDate(item.bulkOrderDate));
+  }
+  return item.daysWaiting;
+}
+
 export function LdnTable({ data, mode, onSelect }: LdnTableProps) {
-  const columnCount = mode === 'waiting' ? 8 : 9;
+  const columnCount = mode === 'waiting' ? 8 : 10;
 
   return (
     <div className="hidden sm:block overflow-x-auto">
@@ -27,6 +35,7 @@ export function LdnTable({ data, mode, onSelect }: LdnTableProps) {
               <>
                 <th className="py-3 px-4 font-medium">Bulk Order</th>
                 <th className="py-3 px-4 font-medium text-right">Bulk Qty</th>
+                <th className="py-3 px-4 font-medium text-center">Age</th>
               </>
             )}
             <th className="py-3 px-4 font-medium text-center">Result</th>
@@ -77,6 +86,13 @@ export function LdnTable({ data, mode, onSelect }: LdnTableProps) {
                     </td>
                     <td className="py-3.5 px-4 text-right font-mono font-medium text-neutral-900 text-xs">
                       {item.bulkQty || '—'}
+                    </td>
+                    <td
+                      className={`py-3.5 px-4 text-center font-mono font-medium text-xs ${
+                        item.bulkOrderDate ? 'text-emerald-700' : 'text-amber-700'
+                      }`}
+                    >
+                      {conversionAge(item)}d
                     </td>
                   </>
                 )}

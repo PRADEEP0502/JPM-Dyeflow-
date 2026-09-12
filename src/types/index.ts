@@ -12,6 +12,7 @@ export interface LdnItem {
   daysWaiting: number; // e.g. 2
   bulkOrderNo?: string; // e.g. "BO-2026-001" or undefined
   bulkQty?: string; // e.g. "2,000 KG" or undefined
+  bulkOrderDate?: string; // date the bulk order was logged in ERP — only set when bulkOrderNo is set
   result: MatchResult;
 }
 
