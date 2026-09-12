@@ -68,7 +68,11 @@ export default function App() {
     customerFilter,
     forcedStatus: 'Waiting',
   });
-  const lrnFilteredData = useLrnFilters(dateFilteredLrnData, searchQuery);
+  const lrnFilteredData = useLrnFilters(dateFilteredLrnData, dateFilteredLdnData, {
+    searchQuery,
+    statusFilter,
+    customerFilter,
+  });
 
   const handleTabChange = (tab: NavTab) => {
     setActiveTab(tab);
@@ -139,7 +143,16 @@ export default function App() {
         )}
 
         {activeTab === 'lrn-tracking' && (
-          <LrnRegisterPage filteredData={lrnFilteredData} stats={lrnStats} onSelect={setSelectedItem} />
+          <LrnRegisterPage
+            totalCount={dateFilteredLrnData.length}
+            filteredData={lrnFilteredData}
+            stats={lrnStats}
+            statusFilter={statusFilter}
+            onStatusFilterChange={setStatusFilter}
+            customerFilter={customerFilter}
+            onClearCustomer={() => setCustomerFilter('all')}
+            onSelect={setSelectedItem}
+          />
         )}
 
         {activeTab === 'ldn-tracking' && (
