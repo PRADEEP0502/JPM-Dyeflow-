@@ -30,7 +30,7 @@ export function LdnTable({ data, mode, onSelect }: LdnTableProps) {
             <th className="py-3 px-4 font-medium">Fabric</th>
             <th className="py-3 px-4 font-medium">Delivered Date</th>
             {mode === 'waiting' ? (
-              <th className="py-3 px-4 font-medium text-center">Days Elapsed</th>
+              <th className="py-3 px-4 font-medium text-center">Age</th>
             ) : (
               <>
                 <th className="py-3 px-4 font-medium">Bulk Order</th>
