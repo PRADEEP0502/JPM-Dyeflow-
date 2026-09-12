@@ -1,11 +1,14 @@
+import { useMemo } from 'react';
 import { LdnItem } from '../types';
-import { StatCard } from '../components/dashboard/StatCard';
-import { WorkflowStepper } from '../components/dashboard/WorkflowStepper';
 import { ConversionOverviewCard } from '../components/dashboard/ConversionOverviewCard';
 import { BulkQuantityPanel } from '../components/dashboard/BulkQuantityPanel';
 import { BuyerConversionList } from '../components/dashboard/BuyerConversionList';
 import { LabProcessingInsight } from '../components/dashboard/LabProcessingInsight';
+import { InsightCard } from '../components/dashboard/InsightCard';
 import { TrendPanel } from '../components/dashboard/TrendPanel';
+import { TrendHeadline } from '../components/dashboard/TrendHeadline';
+import { LineTrendChart } from '../components/dashboard/LineTrendChart';
+import { MiniBarChart } from '../components/dashboard/MiniBarChart';
 import { RecentActivityList } from '../components/dashboard/RecentActivityList';
 import { LdnStats } from '../hooks/useLdnStats';
 import { LrnStats } from '../hooks/useLrnStats';
@@ -19,7 +22,6 @@ interface DashboardPageProps {
   customerFilter: string;
   onSelectCustomer: (customer: string) => void;
   onSelectRecord: (item: LdnItem) => void;
-  onViewLrn: () => void;
   onViewAll: () => void;
   onViewConverted: () => void;
   onViewPending: () => void;
@@ -33,63 +35,38 @@ export function DashboardPage({
   customerFilter,
   onSelectCustomer,
   onSelectRecord,
-  onViewLrn,
   onViewAll,
   onViewConverted,
   onViewPending,
 }: DashboardPageProps) {
+  const topCustomer = useMemo(
+    () =>
+      stats.customerBreakdown.reduce<(typeof stats.customerBreakdown)[number] | null>((best, current) => {
+        if (current.total === 0) return best;
+        if (!best || current.conversionRate > best.conversionRate) return current;
+        return best;
+      }, null),
+    [stats.customerBreakdown]
+  );
+
+  const latestWeek = trend[trend.length - 1];
+  const previousWeek = trend[trend.length - 2];
+  const deliveredDelta = previousWeek ? latestWeek.delivered - previousWeek.delivered : 0;
+  const conversionDelta = previousWeek ? latestWeek.conversionRate - previousWeek.conversionRate : 0;
+
   return (
-    <div className="space-y-6 sm:space-y-8">
-      <WorkflowStepper avgProcessingDays={lrnStats.avgProcessingDays} />
-
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
-        <StatCard
-          label="LRN Received"
-          value={lrnStats.totalLrn}
-          sublabel="Lab inward entries"
-          onClick={onViewLrn}
-        />
-        <StatCard
-          label="LDN Delivered"
-          value={stats.totalDelivered}
-          sublabel="Sample lots outward"
-          onClick={onViewAll}
-        />
-        <StatCard
-          label="Bulk Orders Found"
-          value={stats.totalConverted}
-          trend={`${stats.conversionRate}%`}
-          tone="positive"
-          sublabel="Conversion rate"
-          onClick={onViewConverted}
-        />
-        <StatCard
-          label="Pending Conversion"
-          value={stats.totalWaiting}
-          trend={stats.totalDelivered ? `${100 - stats.conversionRate}%` : undefined}
-          tone="warning"
-          sublabel="Awaiting ERP entry"
-          onClick={onViewPending}
-        />
-        <StatCard
-          label="Conversion Rate"
-          value={`${stats.conversionRate}%`}
-          sublabel={`${stats.totalConverted}/${stats.totalDelivered} LDNs`}
-        />
-        <StatCard
-          label="Bulk Quantity"
-          value={stats.totalConfirmedQtyKg.toLocaleString('en-IN')}
-          unit="KG"
-          sublabel={`Across ${stats.totalConverted} orders`}
-        />
-      </div>
-
+    <div className="space-y-5 sm:space-y-6">
       <div className="grid grid-cols-1 lg:grid-cols-3 2xl:grid-cols-12 gap-5 sm:gap-6">
         <div className="lg:col-span-2 2xl:col-span-8">
-          <ConversionOverviewCard stats={stats} onViewConverted={onViewConverted} onViewPending={onViewPending} />
+          <ConversionOverviewCard
+            stats={stats}
+            onViewAll={onViewAll}
+            onViewConverted={onViewConverted}
+            onViewPending={onViewPending}
+          />
         </div>
         <div className="lg:col-span-1 2xl:col-span-4">
-          <BulkQuantityPanel stats={stats} onReviewPending={onViewPending} />
+          <BulkQuantityPanel stats={stats} totalLrn={lrnStats.totalLrn} onReviewPending={onViewPending} />
         </div>
       </div>
 
@@ -99,29 +76,53 @@ export function DashboardPage({
             breakdown={stats.customerBreakdown}
             activeCustomer={customerFilter}
             onSelectCustomer={onSelectCustomer}
+            onViewAll={onViewAll}
           />
         </div>
-        <LabProcessingInsight distribution={lrnStats.distribution} avgProcessingDays={lrnStats.avgProcessingDays} />
+        <div className="lg:col-span-1 flex flex-col gap-5 sm:gap-6">
+          <LabProcessingInsight distribution={lrnStats.distribution} avgProcessingDays={lrnStats.avgProcessingDays} />
+          <InsightCard
+            headlineNumber={stats.conversionRate}
+            headlineSuffix="%"
+            headlineText={`${stats.totalConverted} of ${stats.totalDelivered} delivered samples have converted into confirmed bulk orders.`}
+            secondaryText={
+              topCustomer
+                ? `${topCustomer.customer} leads conversion at ${topCustomer.conversionRate}%, with ${topCustomer.qtyKg.toLocaleString('en-IN')} KG confirmed.`
+                : `Average LRN to LDN processing time is ${lrnStats.avgProcessingDays} days.`
+            }
+            progressPercent={stats.conversionRate}
+          />
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 sm:gap-6">
         <TrendPanel
           title="LDN Delivery Trend"
           description="Samples delivered per week"
-          data={trend.map((bucket) => ({ label: bucket.label, value: bucket.delivered }))}
-          barClassName="bg-blue-500"
-        />
+          headline={<TrendHeadline value={latestWeek.delivered} delta={deliveredDelta} />}
+        >
+          <LineTrendChart
+            data={trend.map((bucket) => ({ label: bucket.label, value: bucket.delivered }))}
+            colorClassName="text-blue-500"
+          />
+        </TrendPanel>
         <TrendPanel
           title="Bulk Conversion Trend"
           description="Conversion rate of delivered samples, per week"
-          data={trend.map((bucket) => ({ label: bucket.label, value: bucket.conversionRate }))}
-          barClassName="bg-violet-500"
-          valueSuffix="%"
+          headline={<TrendHeadline value={latestWeek.conversionRate} suffix="%" delta={conversionDelta} deltaSuffix="%" />}
           footnote="Recent weeks read lower because newer samples haven't had time to convert yet."
-        />
+        >
+          <MiniBarChart
+            data={trend.map((bucket) => ({ label: bucket.label, value: bucket.conversionRate }))}
+            barClassName="bg-gradient-to-b from-violet-600 to-violet-800"
+            mutedBarClassName="bg-gradient-to-b from-violet-200 to-violet-400"
+            axisMax={100}
+            valueSuffix="%"
+          />
+        </TrendPanel>
       </div>
 
-      <RecentActivityList data={recentData} onSelect={onSelectRecord} />
+      <RecentActivityList data={recentData} onSelect={onSelectRecord} onViewAll={onViewAll} />
     </div>
   );
 }

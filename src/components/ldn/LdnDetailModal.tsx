@@ -23,7 +23,7 @@ export function LdnDetailModal({ item, onClose }: LdnDetailModalProps) {
         <div className="flex items-center justify-between">
           <div>
             <span className="text-[11px] font-medium uppercase tracking-wide text-neutral-400">Record Detail</span>
-            <h3 className="text-lg font-semibold text-neutral-900 font-mono mt-0.5">{item.ldnNo}</h3>
+            <h3 className="text-lg font-semibold text-neutral-900 font-mono uppercase tracking-wide mt-0.5">{item.ldnNo}</h3>
           </div>
           <button
             type="button"

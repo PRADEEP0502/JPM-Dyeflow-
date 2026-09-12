@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Menu, X } from 'lucide-react';
+import { Bell, Menu, X } from 'lucide-react';
 import { NavTab } from '../../types';
 import { SearchInput } from '../common/SearchInput';
 import { MobileNav } from './MobileNav';
@@ -28,22 +28,24 @@ export function Header({ activeTab, onTabChange, searchQuery, onSearchChange }: 
 
   return (
     <header className="sticky top-0 z-30 bg-white border-b border-neutral-200">
-      <div className="w-full px-4 sm:px-6 lg:px-8 xl:px-10 h-16 flex items-center justify-between gap-6">
-        <div className="flex items-center gap-2.5 shrink-0">
+      <div className="w-full px-4 sm:px-6 lg:px-8 xl:px-10 h-16 grid grid-cols-[1fr_auto_1fr] items-center gap-6">
+        <div className="flex items-center gap-2.5 shrink-0 justify-self-start">
           <div className="w-7 h-7 rounded-md bg-neutral-900 flex items-center justify-center text-white font-semibold text-[11px] tracking-wider">
             JPM
           </div>
           <span className="font-semibold text-[15px] text-neutral-900 tracking-tight">DyeFlow</span>
         </div>
 
-        <nav className="hidden lg:flex items-center gap-1">
+        <nav className="hidden lg:flex items-center gap-8 justify-self-center">
           {NAV_ITEMS.map(({ tab, label }) => (
             <button
               key={tab}
               type="button"
               onClick={() => handleTabChange(tab)}
-              className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${
-                activeTab === tab ? 'bg-neutral-900 text-white' : 'text-neutral-500 hover:text-neutral-900'
+              className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all duration-200 ${
+                activeTab === tab
+                  ? 'bg-neutral-900 text-white shadow-sm shadow-neutral-900/20'
+                  : 'text-neutral-500 hover:text-neutral-900 hover:bg-neutral-50'
               }`}
             >
               {label}
@@ -51,13 +53,29 @@ export function Header({ activeTab, onTabChange, searchQuery, onSearchChange }: 
           ))}
         </nav>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3 justify-self-end">
           <SearchInput
             value={searchQuery}
             onChange={onSearchChange}
             placeholder="Search LDN, Buyer..."
             className="hidden sm:block w-48 md:w-60 lg:w-64"
           />
+
+          <button
+            type="button"
+            className="hidden sm:flex p-2 rounded-full text-neutral-400 hover:text-neutral-600 hover:bg-neutral-100 transition-colors relative"
+            aria-label="Notifications"
+          >
+            <Bell className="w-[18px] h-[18px]" />
+            <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-rose-500" />
+          </button>
+
+          <div
+            className="hidden sm:flex w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-violet-500 items-center justify-center text-white text-[11px] font-semibold shrink-0"
+            aria-hidden="true"
+          >
+            JD
+          </div>
 
           <button
             type="button"
