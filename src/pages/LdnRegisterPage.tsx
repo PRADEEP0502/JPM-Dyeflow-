@@ -44,7 +44,7 @@ export function LdnRegisterPage({
         />
       </div>
 
-      <div className="bg-white border border-neutral-200 rounded-2xl overflow-hidden">
+      <div className="bg-white/70 backdrop-blur-xl border border-white/60 rounded-2xl overflow-hidden shadow-[0_8px_32px_-12px_rgba(15,23,42,0.15)] transition-shadow duration-200 hover:shadow-[0_12px_36px_-10px_rgba(15,23,42,0.18)]">
         <LdnTable data={filteredData} mode="all" onSelect={onSelect} />
         <LdnCardList data={filteredData} onSelect={onSelect} />
       </div>

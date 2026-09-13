@@ -1,5 +1,6 @@
 import { LdnItem } from '../../types';
 import { StatusBadge } from './StatusBadge';
+import { EmptyState } from '../common/EmptyState';
 import { daysBetween, parseDisplayDate } from '../../utils/format';
 
 interface LdnTableProps {
@@ -22,30 +23,30 @@ export function LdnTable({ data, mode, onSelect }: LdnTableProps) {
     <div className="hidden sm:block overflow-x-auto">
       <table className="w-full text-left text-sm border-collapse">
         <thead>
-          <tr className="border-b border-neutral-200 text-neutral-500 text-xs uppercase tracking-wide">
-            <th className="py-3 px-4 font-medium">LDN No</th>
-            <th className="py-3 px-4 font-medium">LRN No</th>
-            <th className="py-3 px-4 font-medium">Customer</th>
-            <th className="py-3 px-4 font-medium">Colour</th>
-            <th className="py-3 px-4 font-medium">Fabric</th>
-            <th className="py-3 px-4 font-medium">Delivered Date</th>
+          <tr className="border-b border-neutral-200 bg-neutral-50/50 text-neutral-500 text-xs uppercase tracking-wide">
+            <th className="py-3.5 px-5 font-semibold">LDN No</th>
+            <th className="py-3.5 px-5 font-semibold">LRN No</th>
+            <th className="py-3.5 px-5 font-semibold">Customer</th>
+            <th className="py-3.5 px-5 font-semibold">Colour</th>
+            <th className="py-3.5 px-5 font-semibold">Fabric</th>
+            <th className="py-3.5 px-5 font-semibold">Delivered Date</th>
             {mode === 'waiting' ? (
-              <th className="py-3 px-4 font-medium text-center">Age</th>
+              <th className="py-3.5 px-5 font-semibold text-center">Age</th>
             ) : (
               <>
-                <th className="py-3 px-4 font-medium">Bulk Order</th>
-                <th className="py-3 px-4 font-medium text-right">Bulk Qty</th>
-                <th className="py-3 px-4 font-medium text-center">Age</th>
+                <th className="py-3.5 px-5 font-semibold">Bulk Order</th>
+                <th className="py-3.5 px-5 font-semibold text-right">Bulk Qty</th>
+                <th className="py-3.5 px-5 font-semibold text-center">Age</th>
               </>
             )}
-            <th className="py-3 px-4 font-medium text-center">Result</th>
+            <th className="py-3.5 px-5 font-semibold text-center">Result</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-neutral-100">
           {data.length === 0 ? (
             <tr>
-              <td colSpan={columnCount} className="py-10 text-center text-sm text-neutral-400">
-                No records found matching criteria.
+              <td colSpan={columnCount}>
+                <EmptyState />
               </td>
             </tr>
           ) : (
@@ -53,42 +54,42 @@ export function LdnTable({ data, mode, onSelect }: LdnTableProps) {
               <tr
                 key={item.ldnNo}
                 onClick={() => onSelect(item)}
-                className="hover:bg-neutral-50 cursor-pointer transition-colors"
+                className="hover:bg-neutral-50/80 cursor-pointer transition-colors"
               >
-                <td className="py-3.5 px-4 font-mono font-medium text-neutral-900">{item.ldnNo}</td>
-                <td className="py-3.5 px-4 font-mono text-neutral-500 text-xs">{item.lrnNo}</td>
-                <td className="py-3.5 px-4 font-medium text-neutral-900">{item.customer}</td>
-                <td className="py-3.5 px-4 text-neutral-700">
-                  <div className="flex items-center gap-2">
+                <td className="py-4 px-5 font-mono font-medium text-neutral-900">{item.ldnNo}</td>
+                <td className="py-4 px-5 font-mono text-neutral-500 text-xs">{item.lrnNo}</td>
+                <td className="py-4 px-5 font-semibold text-neutral-900">{item.customer}</td>
+                <td className="py-4 px-5 text-neutral-700">
+                  <div className="flex items-center gap-2.5">
                     {item.colorHex && (
                       <span
-                        className="w-3 h-3 rounded-full border border-neutral-200 shrink-0"
+                        className="w-3.5 h-3.5 rounded-full border border-neutral-200 shrink-0 shadow-2xs"
                         style={{ backgroundColor: item.colorHex }}
                       />
                     )}
-                    <span className="text-xs">{item.colorName}</span>
+                    <span className="text-xs font-medium">{item.colorName}</span>
                   </div>
                 </td>
-                <td className="py-3.5 px-4 text-neutral-500 text-xs">{item.fabric}</td>
-                <td className="py-3.5 px-4 text-neutral-500 font-mono text-xs">{item.deliveredDate}</td>
+                <td className="py-4 px-5 text-neutral-600 text-xs">{item.fabric}</td>
+                <td className="py-4 px-5 text-neutral-500 font-mono text-xs">{item.deliveredDate}</td>
                 {mode === 'waiting' ? (
-                  <td className="py-3.5 px-4 text-center font-mono text-amber-700 font-medium text-xs">
+                  <td className="py-4 px-5 text-center font-mono text-amber-700 font-semibold text-xs">
                     {item.daysWaiting}d
                   </td>
                 ) : (
                   <>
-                    <td className="py-3.5 px-4 font-mono text-xs">
+                    <td className="py-4 px-5 font-mono text-xs">
                       {item.bulkOrderNo ? (
-                        <span className="font-medium text-emerald-700">{item.bulkOrderNo}</span>
+                        <span className="font-semibold text-emerald-700">{item.bulkOrderNo}</span>
                       ) : (
                         <span className="text-neutral-300">—</span>
                       )}
                     </td>
-                    <td className="py-3.5 px-4 text-right font-mono font-medium text-neutral-900 text-xs">
+                    <td className="py-4 px-5 text-right font-mono font-semibold text-neutral-900 text-xs">
                       {item.bulkQty || '—'}
                     </td>
                     <td
-                      className={`py-3.5 px-4 text-center font-mono font-medium text-xs ${
+                      className={`py-4 px-5 text-center font-mono font-semibold text-xs ${
                         item.bulkOrderDate ? 'text-emerald-700' : 'text-amber-700'
                       }`}
                     >
@@ -96,7 +97,7 @@ export function LdnTable({ data, mode, onSelect }: LdnTableProps) {
                     </td>
                   </>
                 )}
-                <td className="py-3.5 px-4 text-center">
+                <td className="py-4 px-5 text-center">
                   <StatusBadge result={item.result} />
                 </td>
               </tr>

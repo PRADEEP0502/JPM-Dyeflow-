@@ -2,6 +2,7 @@ import { ChevronRight } from 'lucide-react';
 import { LdnItem, LrnRecord } from '../../types';
 import { LDN_DATA } from '../../data/mockData';
 import { StatusBadge } from '../ldn/StatusBadge';
+import { EmptyState } from '../common/EmptyState';
 import { daysBetween, parseDisplayDate } from '../../utils/format';
 
 interface LrnCardListProps {
@@ -13,7 +14,7 @@ export function LrnCardList({ data, onSelect }: LrnCardListProps) {
   return (
     <div className="sm:hidden divide-y divide-neutral-100">
       {data.length === 0 ? (
-        <div className="p-6 text-center text-xs text-neutral-400">No records found matching criteria.</div>
+        <EmptyState />
       ) : (
         data.map((lrn) => {
           const linkedLdn = LDN_DATA.find((ldn) => ldn.lrnNo === lrn.lrnNo);

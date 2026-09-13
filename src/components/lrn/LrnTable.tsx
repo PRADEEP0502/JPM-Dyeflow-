@@ -1,6 +1,7 @@
 import { LdnItem, LrnRecord } from '../../types';
 import { LDN_DATA } from '../../data/mockData';
 import { StatusBadge } from '../ldn/StatusBadge';
+import { EmptyState } from '../common/EmptyState';
 import { daysBetween, parseDisplayDate } from '../../utils/format';
 
 interface LrnTableProps {
@@ -29,8 +30,8 @@ export function LrnTable({ data, onSelect }: LrnTableProps) {
         <tbody className="divide-y divide-neutral-100">
           {data.length === 0 ? (
             <tr>
-              <td colSpan={10} className="py-12 text-center text-sm text-neutral-400">
-                No records found matching criteria.
+              <td colSpan={10}>
+                <EmptyState />
               </td>
             </tr>
           ) : (

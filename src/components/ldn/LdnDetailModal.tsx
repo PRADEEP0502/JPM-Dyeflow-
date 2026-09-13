@@ -14,11 +14,11 @@ export function LdnDetailModal({ item, onClose }: LdnDetailModalProps) {
 
   return (
     <div
-      className="fixed inset-0 z-50 bg-neutral-900/40 flex items-center justify-center p-3 sm:p-4 overflow-y-auto"
+      className="fixed inset-0 z-50 bg-neutral-900/40 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 overflow-y-auto"
       onClick={onClose}
     >
       <div
-        className="bg-white rounded-2xl border border-neutral-200 shadow-xl max-w-lg w-full p-5 sm:p-6 space-y-5 my-auto"
+        className="bg-white/95 backdrop-blur-xl rounded-2xl border border-white/60 shadow-[0_24px_60px_-15px_rgba(15,23,42,0.4)] max-w-lg w-full p-5 sm:p-6 space-y-5 my-auto"
         onClick={(event) => event.stopPropagation()}
       >
         <div className="flex items-center justify-between">

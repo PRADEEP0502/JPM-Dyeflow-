@@ -1,6 +1,7 @@
 import { ChevronRight } from 'lucide-react';
 import { LdnItem } from '../../types';
 import { StatusBadge } from './StatusBadge';
+import { EmptyState } from '../common/EmptyState';
 import { daysBetween, parseDisplayDate } from '../../utils/format';
 
 function conversionAge(item: LdnItem): number {
@@ -19,7 +20,7 @@ export function LdnCardList({ data, onSelect }: LdnCardListProps) {
   return (
     <div className="sm:hidden divide-y divide-neutral-100">
       {data.length === 0 ? (
-        <div className="p-6 text-center text-xs text-neutral-400">No records found matching criteria.</div>
+        <EmptyState />
       ) : (
         data.map((item) => (
           <div
