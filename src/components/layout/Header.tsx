@@ -3,6 +3,7 @@ import { Bell, Menu, X } from 'lucide-react';
 import { NavTab } from '../../types';
 import { SearchInput } from '../common/SearchInput';
 import { MobileNav } from './MobileNav';
+import jpmLogo from '../../assets/jpm-logo.png';
 
 interface HeaderProps {
   activeTab: NavTab;
@@ -30,9 +31,13 @@ export function Header({ activeTab, onTabChange, searchQuery, onSearchChange }: 
     <header className="sticky top-0 z-30 bg-white border-b border-neutral-200">
       <div className="w-full px-4 sm:px-6 lg:px-8 xl:px-10 h-16 grid grid-cols-[1fr_auto_1fr] items-center gap-6">
         <div className="flex items-center gap-2.5 shrink-0 justify-self-start">
-          <div className="w-7 h-7 rounded-md bg-neutral-900 flex items-center justify-center text-white font-semibold text-[11px] tracking-wider">
-            JPM
-          </div>
+          <img
+            src={jpmLogo}
+            alt="Junior Processing Mill"
+            width={32}
+            height={32}
+            className="w-8 h-8 rounded-full object-contain shrink-0"
+          />
           <span className="font-semibold text-[15px] text-neutral-900 tracking-tight">DyeFlow</span>
         </div>
 

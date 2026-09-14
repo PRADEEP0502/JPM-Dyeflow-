@@ -66,7 +66,7 @@ export function LdnDetailModal({ item, onClose }: LdnDetailModalProps) {
             <strong className="text-neutral-700 font-mono text-sm block mt-0.5">{item.deliveredDate}</strong>
           </div>
           <div>
-            <span className="text-neutral-400 block">Elapsed</span>
+            <span className="text-neutral-400 block">Age</span>
             <strong className="text-neutral-700 font-mono text-sm block mt-0.5">{item.daysWaiting} days</strong>
           </div>
         </div>

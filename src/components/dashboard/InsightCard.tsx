@@ -1,6 +1,7 @@
 import { Sparkles } from 'lucide-react';
 import { useEnter } from '../../hooks/useEnter';
 import { AnimatedNumber } from './AnimatedNumber';
+import insightBg from '../../assets/insight-bg.webp';
 
 interface InsightCardProps {
   headlineNumber: number;
@@ -23,9 +24,10 @@ export function InsightCard({
     <div
       className="relative overflow-hidden rounded-2xl p-5 sm:p-6 shadow-[0_10px_24px_-10px_rgba(3,105,161,0.5)] h-full flex flex-col justify-between text-white transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_14px_28px_-8px_rgba(3,105,161,0.55)]"
       style={{
-        backgroundImage:
-          'radial-gradient(circle, rgba(255,255,255,0.16) 1px, transparent 1.4px), linear-gradient(135deg, #1e3a8a 0%, #0369a1 30%, #0891b2 50%, #f59e0b 75%, #ea580c 100%)',
-        backgroundSize: '16px 16px, 100% 100%',
+        // Scrim over the mill's textile artwork keeps the white text readable on its lighter areas.
+        backgroundImage: `linear-gradient(140deg, rgba(12,28,70,0.88) 0%, rgba(7,72,110,0.72) 45%, rgba(150,60,12,0.72) 100%), url(${insightBg})`,
+        backgroundSize: 'cover, cover',
+        backgroundPosition: 'center, center',
       }}
     >
       <div className="relative">
