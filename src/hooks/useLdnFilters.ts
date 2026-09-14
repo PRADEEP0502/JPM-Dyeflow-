@@ -1,43 +1,56 @@
 import { useMemo } from 'react';
-import { LdnItem, MatchResult } from '../types';
+import { LdnItem, MatchResult, RecordFilters } from '../types';
 
 export interface LdnFilterCriteria {
   searchQuery: string;
-  statusFilter: 'all' | MatchResult;
-  customerFilter: string;
-  /** When set, overrides statusFilter — used to lock a page to one result (e.g. Pending Bulk Orders). */
+  filters: RecordFilters;
+  /** When set, overrides the status filter — used to lock a page to one result (e.g. Bulk Order Check). */
   forcedStatus?: MatchResult;
 }
 
 export function useLdnFilters(data: LdnItem[], criteria: LdnFilterCriteria): LdnItem[] {
-  const { searchQuery, statusFilter, customerFilter, forcedStatus } = criteria;
+  const { searchQuery, filters, forcedStatus } = criteria;
 
   return useMemo(() => {
     let list = data;
 
     if (forcedStatus) {
       list = list.filter((item) => item.result === forcedStatus);
-    } else if (statusFilter !== 'all') {
-      list = list.filter((item) => item.result === statusFilter);
+    } else if (filters.status !== 'all') {
+      list = list.filter((item) => item.result === filters.status);
     }
 
-    if (customerFilter !== 'all') {
-      list = list.filter((item) => item.customer === customerFilter);
+    if (filters.customer !== 'all') {
+      list = list.filter((item) => item.customer === filters.customer);
+    }
+    if (filters.fabric !== 'all') {
+      list = list.filter((item) => item.fabric === filters.fabric);
+    }
+    if (filters.colour !== 'all') {
+      list = list.filter((item) => item.colorName === filters.colour);
     }
 
     const query = searchQuery.trim().toLowerCase();
     if (query) {
-      list = list.filter(
-        (item) =>
-          item.customer.toLowerCase().includes(query) ||
-          item.ldnNo.toLowerCase().includes(query) ||
-          item.lrnNo.toLowerCase().includes(query) ||
-          item.labAppNo.toLowerCase().includes(query) ||
-          item.colorName.toLowerCase().includes(query) ||
-          (item.bulkOrderNo ? item.bulkOrderNo.toLowerCase().includes(query) : false)
+      list = list.filter((item) =>
+        [
+          item.ldnNo,
+          item.lrnNo,
+          item.labAppNo,
+          item.customer,
+          item.colorName,
+          item.fabric,
+          item.deliveredDate,
+          item.bulkOrderNo ?? '',
+          item.bulkQty ?? '',
+          item.bulkOrderDate ?? '',
+        ]
+          .join(' ')
+          .toLowerCase()
+          .includes(query)
       );
     }
 
     return list;
-  }, [data, forcedStatus, statusFilter, customerFilter, searchQuery]);
+  }, [data, forcedStatus, filters, searchQuery]);
 }

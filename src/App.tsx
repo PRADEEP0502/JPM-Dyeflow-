@@ -1,6 +1,6 @@
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { Link2 } from 'lucide-react';
-import { LdnItem, MatchResult, NavTab } from './types';
+import { EMPTY_FILTERS, LdnItem, NavTab, RecordFilters } from './types';
 import { LDN_DATA, LRN_DATA, DATA_AS_OF } from './data/mockData';
 import { useLdnStats } from './hooks/useLdnStats';
 import { useLdnFilters } from './hooks/useLdnFilters';
@@ -43,8 +43,7 @@ const MAX_DELIVERY_DATE = new Date(Math.max(...DELIVERY_DATES));
 export default function App() {
   const [activeTab, setActiveTab] = useState<NavTab>('dashboard');
   const [searchQuery, setSearchQuery] = useState('');
-  const [customerFilter, setCustomerFilter] = useState('all');
-  const [statusFilter, setStatusFilter] = useState<'all' | MatchResult>('all');
+  const [filters, setFilters] = useState<RecordFilters>(EMPTY_FILTERS);
   const [selectedItem, setSelectedItem] = useState<LdnItem | null>(null);
   const [dateRange, setDateRange] = useState({ start: MIN_DELIVERY_DATE, end: MAX_DELIVERY_DATE });
 
@@ -61,24 +60,53 @@ export default function App() {
   const lrnStats = useLrnStats(dateFilteredLrnData, dateFilteredLdnData);
   const trend = useDeliveryTrend(dateFilteredLdnData);
 
-  const registerData = useLdnFilters(dateFilteredLdnData, { searchQuery, statusFilter, customerFilter });
-  const pendingData = useLdnFilters(dateFilteredLdnData, {
-    searchQuery,
-    statusFilter,
-    customerFilter,
-    forcedStatus: 'Waiting',
-  });
-  const lrnFilteredData = useLrnFilters(dateFilteredLrnData, dateFilteredLdnData, {
-    searchQuery,
-    statusFilter,
-    customerFilter,
-  });
+  const registerData = useLdnFilters(dateFilteredLdnData, { searchQuery, filters });
+  const pendingData = useLdnFilters(dateFilteredLdnData, { searchQuery, filters, forcedStatus: 'Waiting' });
+  const lrnFilteredData = useLrnFilters(dateFilteredLrnData, dateFilteredLdnData, { searchQuery, filters });
+
+  // Dropdown options come from the data in view, so they never offer a value that yields no rows.
+  const options = useMemo(() => {
+    const distinct = (values: string[]) => Array.from(new Set(values)).sort((a, b) => a.localeCompare(b));
+    return {
+      customer: distinct(dateFilteredLdnData.map((item) => item.customer)),
+      fabric: distinct(dateFilteredLdnData.map((item) => item.fabric)),
+      colour: distinct(dateFilteredLdnData.map((item) => item.colorName)),
+      buyer: distinct(dateFilteredLrnData.map((lrn) => lrn.buyer)),
+      matchSource: distinct(dateFilteredLrnData.map((lrn) => lrn.matchSource)),
+      partyGroup: distinct(dateFilteredLrnData.map((lrn) => lrn.partyGroup)),
+    };
+  }, [dateFilteredLdnData, dateFilteredLrnData]);
+
+  const ldnSelects = useMemo(
+    () => [
+      { key: 'customer' as const, label: 'Customers', options: options.customer },
+      { key: 'colour' as const, label: 'Colours', options: options.colour },
+      { key: 'fabric' as const, label: 'Fabrics', options: options.fabric },
+    ],
+    [options]
+  );
+
+  const lrnSelects = useMemo(
+    () => [
+      { key: 'customer' as const, label: 'Parties', options: options.customer },
+      { key: 'buyer' as const, label: 'Buyers', options: options.buyer },
+      { key: 'colour' as const, label: 'Colours', options: options.colour },
+      { key: 'fabric' as const, label: 'Fabrics', options: options.fabric },
+      { key: 'matchSource' as const, label: 'Sources', options: options.matchSource },
+      { key: 'partyGroup' as const, label: 'Groups', options: options.partyGroup },
+    ],
+    [options]
+  );
+
+  const handleFilterChange = useCallback((key: keyof RecordFilters, value: string) => {
+    setFilters((current) => ({ ...current, [key]: value }));
+  }, []);
+
+  const handleClearFilters = useCallback(() => setFilters(EMPTY_FILTERS), []);
 
   const handleTabChange = (tab: NavTab) => {
     setActiveTab(tab);
-    if (tab !== 'waiting-bulk') {
-      setStatusFilter('all');
-    }
+    setFilters((current) => ({ ...current, status: 'all' }));
   };
 
   const dataAsOfLabel = useMemo(() => formatDisplayDate(DATA_AS_OF), []);
@@ -130,13 +158,13 @@ export default function App() {
             lrnStats={lrnStats}
             trend={trend}
             recentData={dateFilteredLdnData}
-            customerFilter={customerFilter}
-            onSelectCustomer={setCustomerFilter}
+            customerFilter={filters.customer}
+            onSelectCustomer={(customer) => handleFilterChange('customer', customer)}
             onSelectRecord={setSelectedItem}
             onViewAll={() => handleTabChange('ldn-tracking')}
             onViewConverted={() => {
-              handleTabChange('ldn-tracking');
-              setStatusFilter('Bulk Order Found');
+              setActiveTab('ldn-tracking');
+              setFilters((current) => ({ ...current, status: 'Bulk Order Found' }));
             }}
             onViewPending={() => handleTabChange('waiting-bulk')}
           />
@@ -147,10 +175,10 @@ export default function App() {
             totalCount={dateFilteredLrnData.length}
             filteredData={lrnFilteredData}
             stats={lrnStats}
-            statusFilter={statusFilter}
-            onStatusFilterChange={setStatusFilter}
-            customerFilter={customerFilter}
-            onClearCustomer={() => setCustomerFilter('all')}
+            filters={filters}
+            selects={lrnSelects}
+            onFilterChange={handleFilterChange}
+            onClearFilters={handleClearFilters}
             onSelect={setSelectedItem}
           />
         )}
@@ -159,10 +187,10 @@ export default function App() {
           <LdnRegisterPage
             totalCount={dateFilteredLdnData.length}
             filteredData={registerData}
-            statusFilter={statusFilter}
-            onStatusFilterChange={setStatusFilter}
-            customerFilter={customerFilter}
-            onClearCustomer={() => setCustomerFilter('all')}
+            filters={filters}
+            selects={ldnSelects}
+            onFilterChange={handleFilterChange}
+            onClearFilters={handleClearFilters}
             onSelect={setSelectedItem}
           />
         )}
@@ -170,8 +198,10 @@ export default function App() {
         {activeTab === 'waiting-bulk' && (
           <PendingBulkPage
             filteredData={pendingData}
-            customerFilter={customerFilter}
-            onClearCustomer={() => setCustomerFilter('all')}
+            filters={filters}
+            selects={ldnSelects}
+            onFilterChange={handleFilterChange}
+            onClearFilters={handleClearFilters}
             onSelect={setSelectedItem}
           />
         )}

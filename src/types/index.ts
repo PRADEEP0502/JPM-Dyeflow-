@@ -36,3 +36,24 @@ export interface LrnRecord {
 }
 
 export type NavTab = 'dashboard' | 'lrn-tracking' | 'ldn-tracking' | 'waiting-bulk';
+
+/** Shared filter state across the record pages. 'all' means the dimension is unfiltered. */
+export interface RecordFilters {
+  status: 'all' | MatchResult;
+  customer: string;
+  fabric: string;
+  colour: string;
+  buyer: string; // LRN Register only
+  matchSource: string; // LRN Register only
+  partyGroup: string; // LRN Register only
+}
+
+export const EMPTY_FILTERS: RecordFilters = {
+  status: 'all',
+  customer: 'all',
+  fabric: 'all',
+  colour: 'all',
+  buyer: 'all',
+  matchSource: 'all',
+  partyGroup: 'all',
+};
